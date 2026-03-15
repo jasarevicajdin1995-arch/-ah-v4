@@ -231,11 +231,13 @@ function loadNewBoard() {
   return new Promise(resolve => {
     new GLTFLoader().load('./assets/chess_board.glb', gltf => {
       const root = gltf.scene;
-      // Rotate: XY→XZ
-      root.rotation.x = -Math.PI / 2;
+      // DO NOT add any rotation — the GLB node hierarchy already handles
+      // orientation (Sketchfab_model has Rx(-90°) baked in that lays board flat).
+      // Adding another rotation here doubled it and made the board vertical.
       root.scale.setScalar(BOARD_SCALE);
-      // Place board surface slightly below Y=0 so pieces sit on top
-      root.position.set(BOARD_CENTER_X, -0.28, BOARD_CENTER_Z);
+      // Top playing surface of board is at world y ≈ +0.505 (before position).
+      // Shift down so pieces at y=0 sit on the board surface.
+      root.position.set(BOARD_CENTER_X, -0.50, BOARD_CENTER_Z);
       root.traverse(obj => {
         if (!obj.isMesh) return;
         obj.castShadow    = false;
